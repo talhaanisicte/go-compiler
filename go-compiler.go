@@ -90,9 +90,16 @@ func clone(repoLink string) error {
 	}
 	repoPath := strings.Split(strings.Split(repoLink, "https://")[1], ".git")[0]
 	repoRoot = goRoot + repoPath
+	_, err := os.Stat(repoRoot)
+	if !os.IsNotExist(err) {
+		err := os.RemoveAll(repoRoot)
+		if !check(err) {
+			return err
+		}
+	}
 	cmd := exec.Command("git", "clone", repoLink, repoRoot)
-	_, err := cmd.CombinedOutput()
-	if !check(err) {
+	_, err = cmd.CombinedOutput()
+	if err != nil {
 		return err
 	}
 	return nil
